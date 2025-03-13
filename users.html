@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>„·Œ’ «·„” Œœ„Ì‰</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fffaf0;
+            text-align: center;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff5e6;
+        }
+        th, td {
+            border: 1px solid #ffa07a;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #ffcc99;
+        }
+    </style>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAB4wO937rCwc0OTWeJlGgoaxErWOdjaJM",
+            authDomain: "my-new-a6e9f.firebaseapp.com",
+            databaseURL: "https://my-new-a6e9f-default-rtdb.firebaseio.com/",
+            projectId: "my-new-a6e9f",
+            storageBucket: "my-new-a6e9f.appspot.com",
+            messagingSenderId: "1034729064842",
+            appId: "1:1034729064842:web:5b3d42fe7b5c0f3a3ae073"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const usersRef = ref(db, "users");
+        
+        onValue(usersRef, (snapshot) => {
+            let table = document.getElementById("userSummaryTable");
+            table.innerHTML = "";
+            let userMap = {};
+            let colorIndex = 0;
+            let colors = ["#ffebcc", "#ffd699"];
+            
+            snapshot.forEach((childSnapshot) => {
+                let entry = childSnapshot.val();
+                if (!userMap[entry.aviso]) {
+                    userMap[entry.aviso] = [];
+                }
+                userMap[entry.aviso].push(entry.user);
+            });
+            
+            for (let aviso in userMap) {
+                let row = table.insertRow();
+                let avisoCell = row.insertCell(0);
+                avisoCell.textContent = aviso;
+                avisoCell.rowSpan = userMap[aviso].length;
+                avisoCell.style.backgroundColor = colors[colorIndex % colors.length];
+                
+                userMap[aviso].forEach((user, index) => {
+                    if (index > 0) row = table.insertRow();
+                    let userCell = row.insertCell(0);
+                    let checkboxCell = row.insertCell(1);
+                    userCell.textContent = user;
+                    userCell.style.backgroundColor = colors[colorIndex % colors.length];
+                    checkboxCell.style.backgroundColor = colors[colorIndex % colors.length];
+                    let checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
+                    checkboxCell.appendChild(checkbox);
+                });
+                
+                colorIndex++;
+            }
+        });
+    </script>
+</head>
+<body>
+    <h2>„·Œ’ «·„” Œœ„Ì‰</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Aviso</th>
+                <th>User</th>
+                <th> ÕœÌœ</th>
+            </tr>
+        </thead>
+        <tbody id="userSummaryTable"></tbody>
+    </table>
+</body>
+</html>
